@@ -31,10 +31,10 @@
 
         var dta = [{x: 0, y: 0, d: 0}, {x: width, y: 0, d: 0}, {x: width, y: height, d: 0}, {x: 0, y: height, d: 0}]
 
-        eContainer.selectAll('line')
+        eContainer.selectAll('path')
             .data(dta)
             .enter()
-            .append('line')
+            .append('path')
             .classed('contruct', true)
 
         var lines = container.selectAll('.contruct')
@@ -127,13 +127,12 @@
           pos[1] += 3.5
           mouse.attr('cx', pos[0]).attr('cy', pos[1])
 
-          lines.attr('x1', d => d.x)
-            .attr('x2', pos[0])
-            .attr('y1', d => d.y)
-            .attr('y2', pos[1])
-            .each(function (d, i) {
-              d.l = this.getTotalLength()
-            })
+          lines.attr('d', d => {
+            return `M ${d.x} ${d.y} L ${pos[0]} ${pos[1]}`
+          })
+          .each(function (d, i) {
+            d.l = this.getTotalLength()
+          })
 
           lines.style('stroke', '#ddd')
 
@@ -146,13 +145,15 @@
             }
           })
 
-          d3.select(maxL)
+          if (maxL) {
+            d3.select(maxL)
               .style('stroke', 'red')
               .each(function (d, i) {
                 var l = this.getTotalLength()
                 var p = maxL.getPointAtLength(l - 40)
                 legend.attr('transform', `translate(${p.x}, ${p.y})`)
               })
+          }
         })
       })
     }
